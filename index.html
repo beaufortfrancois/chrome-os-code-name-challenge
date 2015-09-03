@@ -1,0 +1,829 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>The Chrome OS code name challenge!</title>
+    <link rel="icon" href="img/chrome.png">
+    <link href='https://fonts.googleapis.com/css?family=Averia+Sans+Libre:400,700' rel='stylesheet' type='text/css'>
+    <style>
+        body {
+            margin: 0 auto;
+            font-family: 'Averia Sans Libre', cursive;
+            color: #333;
+        }
+
+        .wrapper {
+            margin: 0 auto;
+            max-width: 1064px;
+        }
+
+        .banner {
+            text-align: center;
+            position: relative;
+            background-color: rgb(8, 167, 222);
+            color: white;
+            margin: 0 -50px 7px -50px;
+            padding: 16px 0;
+            transition: background-color .2s ease-out;
+            height: 90px;
+        }
+        .banner:before, .banner:after {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+        .banner:before {
+            left: 0;
+            top: 100%;
+            border-width: 5px 10px;
+            border-style: solid;
+            border-color: #888 #888 rgba(0, 0, 0, 0) rgba(0, 0, 0, 0);
+        }
+        .banner:after {
+            right: 0;
+            top: 100%;
+            border-width: 5px 10px;
+            border-style: solid;
+            border-color: #888 rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #888;
+         }
+         .question {
+             margin : 0 auto;
+             text-shadow: 2px 2px 1px rgba(0, 0, 0, 0.35);
+        }
+        .flip {
+            z-index: 1;
+            -moz-perspective: 400px;
+            -webkit-perspective: 400px;
+            width: 200px;
+            height: 126px;
+            float: left;
+            margin: 6px;
+        }
+
+        .flipped {
+            -moz-transform: rotateX(180deg);
+            -webkit-transform: rotateX(180deg);
+            cursor: default !important;
+        }
+
+        .card {
+            -moz-transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            transition: all .2s ease-in-out;
+            width: 200px;
+            height: 126px;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            cursor: hand;
+            text-align: center;
+        }
+
+
+        .front {
+            background: #f7f7f7;
+            transition: all .2s ease-in-out;
+            z-index: 100000;
+            overflow: hidden;
+        }
+        .front:hover {
+            background: #f0f0f0 !important;
+        }
+
+        .face {
+            padding: 12px 0;
+            margin: 0 auto;
+            width: 200px;
+            height: 104px;
+            border-radius: 2px;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+            position: absolute;
+            -moz-backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .found .front {
+            -webkit-transform: scale(.5);
+            -webkit-filter: grayscale(100%);
+            background: transparent !important;
+            box-shadow: none;
+            opacity: .7;
+            cursor: default;
+        }
+
+        .front img {
+            width: 63px;
+            height: 63px;
+            border-radius: 50%;
+            border: 6px solid #FFF;
+            box-shadow: 0 0px 4px #ddd;
+            pointer-events: none;
+        }
+
+        .codename {
+            font-size: 16px;
+            text-transform: uppercase;
+            text-align: center;
+            color: #666;
+            margin: 2px;
+        }
+
+        .back {
+            box-shadow: none;
+            background-color: #999;
+            display: -moz-box;
+            display: -webkit-box;
+            -moz-box-orient: vertical;
+            -webkit-box-orient: vertical;
+            -moz-box-pack: center;
+            -webkit-box-pack: center;
+            -webkit-box-align: center;
+            -webkit-transform: rotateX(180deg);
+            -moz-transform: rotateX(180deg);
+            -moz-box-align: center;
+        }
+        .flip:nth-child(4n) .back {
+            background-color: #08A7DE;
+        }
+        .flip:nth-child(4n+1) .back {
+            background-color: #FFD700;
+        }
+        .flip:nth-child(4n+2) .back {
+            background-color: #ED4F4B;
+        }
+        .flip:nth-child(4n+3) .back {
+            background-color: #6CBF59;
+        }
+
+        .devicename {
+            font-size: 19px;
+            text-transform: uppercase;
+            color: white;
+            display: block;
+            padding: 0 4px;
+        }
+        .releaseDate {
+            font-size: 14px;
+            color: white;
+        }
+
+        .score {
+            position: absolute;
+            bottom: 2px;
+            right: 0px;
+            padding: 0 8px;
+            text-align: right;
+            font-size: 3em;
+            color: white;
+            -moz-transform: rotateZ(-6deg);
+            -webkit-transform: rotateZ(-6deg);
+        }
+
+        .dot:last-child {
+            border-radius: 0 50% 50% 0;
+        }
+        .dot:first-child {
+            border-radius: 50% 0 0 50%;
+        }
+        .dot {
+            background-color: #FFF;
+            padding: 6px;
+            margin:24px 1px;
+            border: 2px solid transparent;
+            display: inline-block;
+            box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.35);
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            transition: all .2s ease-in-out;
+        }
+        .done {
+            -moz-transform: scale(0);
+            -webkit-transform: scale(0);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .paused .card {
+            pointer-events: none;
+
+        }
+        .paused .front:hover {
+            background: #f7f7f7;
+        }
+
+        .help-date {
+            position: absolute;
+            right: -80px;
+            top: 8px;
+            transform: rotate(30deg);
+            background-color: rgba(0,0,0,.1);
+            color: white;
+            width: 100%;
+            opacity: 0;
+            transition: opacity .2s ease-in-out;
+        }
+        .front:hover .help-date {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="banner">
+            <h1 class="question">Let's play the Chrome OS code name challenge!</h1>
+            <div class="timer"></div>
+            <div class="score hidden"></div>
+        </div>
+        <div class="cards"></div>
+    </div>
+
+    <audio id="errorSound1" class="noSound">
+      <source src="sounds/no1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound2" class="noSound">
+      <source src="sounds/no2.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound3" class="noSound">
+      <source src="sounds/no3.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound4" class="noSound">
+      <source src="sounds/no4.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound5" class="noSound">
+      <source src="sounds/no5.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound6" class="noSound">
+      <source src="sounds/no6.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound7" class="noSound">
+      <source src="sounds/no7.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound8" class="noSound">
+      <source src="sounds/no8.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound9" class="noSound">
+      <source src="sounds/no9.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound10" class="noSound">
+      <source src="sounds/no10.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound11" class="noSound">
+      <source src="sounds/no11.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound12" class="noSound">
+      <source src="sounds/no12.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound13" class="noSound">
+      <source src="sounds/no13.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound14" class="noSound">
+      <source src="sounds/no14.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound15" class="noSound">
+      <source src="sounds/no15.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound16" class="noSound">
+      <source src="sounds/no16.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="foundSound">
+      <source src="sounds/found.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="congratsSound">
+      <source src="sounds/congrats.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        var devices = [
+            {
+                'codename': 'Mario',
+                'name': 'Cr-48',
+                'releaseDate': 'December 2010',
+                'image': 'img/mario.png',
+            },
+            {
+                'codename': 'Alex',
+                'name': 'Samsung Series 5',
+                'releaseDate': 'June 2011',
+                'image': 'img/alex.png',
+            },
+            {
+                'codename': 'ZGB',
+                'name': 'Acer AC700',
+                'releaseDate': 'July 2011',
+                'image': 'img/chrome.png',
+            },
+            {
+                'codename': 'Stumpy',
+                'name': 'Samsung Series 3 Chromebox',
+                'releaseDate': 'May 2012',
+                'image': 'img/stumpy.png',
+            },
+            {
+                'codename': 'Lumpy',
+                'name': 'Samsung Chromebook 550',
+                'releaseDate': 'May 2012',
+                'image': 'img/lumpy.png',
+            },
+            {
+                'codename': 'Daisy',
+                'name': 'Samsung Chromebook',
+                'releaseDate': 'October 2012',
+                'image': 'img/daisy.png',
+            },
+            {
+                'codename': 'Parrot',
+                'name': 'Acer C7 Chromebook',
+                'releaseDate': 'November 2012',
+                'image': 'img/parrot.png',
+            },
+            {
+                'codename': 'Stout',
+                'name': 'Lenovo Thinkpad X131e Chromebook',
+                'releaseDate': 'January 2013',
+                'image': 'img/stout.png',
+            },
+            {
+                'codename': 'Butterfly',
+                'name': 'HP Pavilion Chromebook',
+                'releaseDate': 'February 2013',
+                'image': 'img/butterfly.png',
+            },
+            {
+                'codename': 'Link',
+                'name': 'Chromebook Pixel (2013)',
+                'releaseDate': 'February 2013',
+                'image': 'img/link.png',
+            },
+            {
+                'codename': 'Sonic',
+                'name': 'Chromecast',
+                'releaseDate': 'July 2013',
+                'image': 'img/sonic.png',
+            },
+            {
+                'codename': 'Spring',
+                'name': 'HP Chromebook 11 G3',
+                'releaseDate': 'October 2013',
+                'image': 'img/spring.png',
+            },
+            {
+                'codename': 'Peppy',
+                'name': 'Acer C720 Chromebook',
+                'releaseDate': 'October 2013',
+                'image': 'img/peppy.png',
+            },
+            {
+                'codename': 'Falco',
+                'name': 'HP Chromebook 14',
+                'releaseDate': 'October 2013',
+                'image': 'img/falco.png',
+            },
+            {
+                'codename': 'Pepto',
+                'name': 'Acer C720P Chromebook',
+                'releaseDate': 'January 2014',
+                'image': 'img/pepto.png',
+            },
+            {
+                'codename': 'Wolf',
+                'name': 'Dell Chromebook 11',
+                'releaseDate': 'January 2014',
+                'image': 'img/wolf.png',
+            },
+            {
+                'codename': 'Leon',
+                'name': 'Toshiba Chromebook',
+                'releaseDate': 'February 2014',
+                'image': 'img/leon.png',
+            },
+            {
+                'codename': 'Panther',
+                'name': 'ASUS Chromebox',
+                'releaseDate': 'March 2014',
+                'image': 'img/panther.png',
+            },
+            {
+                'codename': 'Skate',
+                'name': 'HP Chromebook 11 G2',
+                'releaseDate': 'April 2014',
+                'image': 'img/skate.png',
+            },
+            {
+                'codename': 'Monroe',
+                'name': 'LG Chromebase',
+                'releaseDate': 'May 2014',
+                'image': 'img/monroe.png',
+            },
+            {
+                'codename': 'Glimmer',
+                'name': 'Lenovo ThinkPad 11e Chromebook',
+                'releaseDate': 'June 2014',
+                'image': 'img/glimmer.png',
+            },
+            {
+                'codename': 'Peach',
+                'name': 'Samsung Chromebook 2',
+                'releaseDate': 'June 2014',
+                'image': 'img/peach.png',
+            },
+            {
+                'codename': 'Expresso',
+                'name': 'White-Label Chromebook',
+                'releaseDate': 'June 2014',
+                'image': 'img/expresso.png',
+            },
+            {
+                'codename': 'Enguarde',
+                'name': 'White-Label Education Chromebook',
+                'releaseDate': 'June 2014',
+                'image': 'img/enguarde.png',
+            },
+            {
+                'codename': 'Quawks',
+                'name': 'Asus Chromebook C300',
+                'releaseDate': 'June 2014',
+                'image': 'img/quawks.png',
+            },
+            {
+                'codename': 'Squawks',
+                'name': 'Asus Chromebook C200',
+                'releaseDate': 'June 2014',
+                'image': 'img/squawks.png',
+            },
+            {
+                'codename': 'Zako',
+                'name': 'HP Chromebox',
+                'releaseDate': 'June 2014',
+                'image': 'img/zako.png',
+            },
+            {
+                'codename': 'Clapper',
+                'name': 'Lenovo Chromebook N20',
+                'releaseDate': 'July 2014',
+                'image': 'img/clapper.png',
+            },
+            {
+                'codename': 'Kip',
+                'name': 'HP Chromebook 11 G3',
+                'releaseDate': 'September 2014',
+                'image': 'img/kip.png',
+            },
+            {
+                'codename': 'Big',
+                'name': 'Acer Chromebook 13 CB5-311',
+                'releaseDate': 'September 2014',
+                'image': 'img/big.png',
+            },
+            {
+                'codename': 'Swanky',
+                'name': 'Toshiba Chromebook 2',
+                'releaseDate': 'September 2014',
+                'image': 'img/swanky.png',
+            },
+            {
+                'codename': 'Tricky',
+                'name': 'Dell Chromebox',
+                'releaseDate': 'September 2014',
+                'image': 'img/tricky.png',
+            },
+            {
+                'codename': 'Blaze',
+                'name': 'HP Chromebook 14 G3',
+                'releaseDate': 'October 2014',
+                'image': 'img/blaze.png',
+            },
+            {
+                'codename': 'McCloud',
+                'name': 'Acer Chromebox',
+                'releaseDate': 'October 2014',
+                'image': 'img/mccloud.png',
+            },
+            {
+                'codename': 'Winky',
+                'name': 'Samsung Chromebook 2 11 - XE500C12',
+                'releaseDate': 'October 2014',
+                'image': 'img/winky.png',
+            },
+            {
+                'codename': 'Gnawty',
+                'name': 'Acer Chromebook 11',
+                'releaseDate': 'October 2014',
+                'image': 'img/gnawty.png',
+            },
+            {
+                'codename': 'Paine',
+                'name': 'Acer C740 Chromebook 11',
+                'releaseDate': 'February 2015',
+                'image': 'img/paine.png',
+            },
+            {
+                'codename': 'Yuna',
+                'name': 'Acer C910 Chromebook 15',
+                'releaseDate': 'February 2015',
+                'image': 'img/yuna.png',
+            },
+            {
+                'codename': 'Candy',
+                'name': 'Dell Chromebook 11 (3120)',
+                'releaseDate': 'February 2015',
+                'image': 'img/candy.png',
+            },
+            {
+                'codename': 'Samus',
+                'name': 'Chromebook Pixel (2015)',
+                'releaseDate': 'March 2015',
+                'image': 'img/samus.png',
+            },
+            {
+                'codename': 'Ding Dong',
+                'name': 'USB Type-C to DP Adapter',
+                'releaseDate': 'March 2015',
+                'image': 'img/dingdong.png',
+            },
+            {
+                'codename': 'HoHo',
+                'name': 'USB Type-C to HDMI Adapter',
+                'releaseDate': 'March 2015',
+                'image': 'img/hoho.png',
+            },
+            {
+                'codename': 'Twinkie',
+                'name': 'USB-PD Sniffer',
+                'releaseDate': 'March 2015',
+                'image': 'img/twinkie.png',
+            },
+            {
+                'codename': 'Speedy',
+                'name': 'Asus Chromebook C201',
+                'releaseDate': 'March 2015',
+                'image': 'img/speedy.png',
+            },
+            {
+                'codename': 'Jaq',
+                'name': 'Haier Chromebook 11',
+                'releaseDate': 'April 2015',
+                'image': 'img/jaq.png',
+            },
+            {
+                'codename': 'Jerry',
+                'name': 'Hisense Chromebook',
+                'releaseDate': 'April 2015',
+                'image': 'img/jerry.png',
+            },
+            {
+                'codename': 'Minnie',
+                'name': 'Acer Chromebook Flip C100',
+                'releaseDate': 'June 2015',
+                'image': 'img/minnie.png',
+            },
+            {
+                'codename': 'Tidus',
+                'name': 'Lenovo ThinkCentre Chromebox',
+                'releaseDate': 'June 2015',
+                'image': 'img/tidus.png',
+            },
+            {
+                'codename': 'Banjo',
+                'name': 'Acer Chromebook 15 CB3-531',
+                'releaseDate': 'July 2015',
+                'image': 'img/banjo.png',
+            },
+        ];
+
+
+        var score = document.querySelector('.score');
+        function updateScore() {
+            score.textContent = devices.length - devicesLeft.length + '/' + devices.length;
+        }
+
+        var indexErrorSound = 0;
+        var numberErrorSounds = document.querySelectorAll('.noSound').length;
+        function playErrorSound() {
+            indexErrorSound = (indexErrorSound++ % numberErrorSounds) + 1;
+            var audio = document.querySelector('#errorSound' + indexErrorSound);
+            playSound(audio);
+        }
+
+        function playSound(audio) {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.play();
+        }
+
+        var cards = document.querySelector('.cards');
+
+        function pauseGame() {
+            play = false;
+            cards.classList.add('paused');
+        }
+
+        function resumeGame() {
+            play = true;
+            cards.classList.remove('paused');
+        }
+
+        var foundSound = document.querySelector('#foundSound');
+        var congratsSound = document.querySelector('#congratsSound');
+
+        var numberBadAnswers = 0;
+
+        function flipCard(event) {
+            var card = this;
+            if (card.classList.contains('flipped') || card.classList.contains('found') || !play)
+                return false;
+
+            pauseGame();
+
+            var timeout = 200;
+            card.classList.add('flipped');
+
+            if (card.querySelector('.deviceName').textContent === answer.name) {
+                for (i = 0; i < devicesLeft.length; i++) {
+                    if (devicesLeft[i].name === answer.name) {
+                        devicesLeft.splice(i, 1);
+                        break;
+                    }
+                }
+                if (devicesLeft.length === 0) {
+                    playSound(congratsSound);
+                    setTimeout(congratulations, timeout);
+                } else {
+                    playSound(foundSound);
+                    setTimeout(function() {
+                        card.classList.add('found');
+                    }, 200)
+                    setTimeout(askQuestion, timeout + 200);
+                }
+            } else {
+                playErrorSound();
+                numberBadAnswers++;
+                setTimeout(resumeGame, timeout);
+            }
+
+        }
+
+        function setupCards() {
+            devices.sort(function (a, b) {
+                if (a.codename > b.codename) return 1;
+                if (a.codename < b.codename) return -1;
+                return 0;
+            });
+            for (var i = 0; i < devices.length; i++) {
+                var device = devices[i];
+
+                var flip = document.createElement('div');
+                flip.classList.add('flip');
+
+                var card = document.createElement('div');
+                card.classList.add('card', 'flipped');
+
+                var front = document.createElement('div');
+                front.classList.add('front', 'face');
+
+                var helpDate = document.createElement('div');
+                helpDate.classList.add('help-date');
+                helpDate.textContent = device.releaseDate.substr(device.releaseDate.length - 4);
+                front.appendChild(helpDate);
+
+                var codename = document.createElement('div');
+                codename.classList.add('codename');
+                codename.textContent = device.codename;
+                front.appendChild(codename);
+
+                var image = new Image();
+                var imageUrl = device.image;
+                if (window.devicePixelRatio === 2)
+                    imageUrl = imageUrl.replace('.png', '_2x.png')
+                image.src = imageUrl;
+                front.appendChild(image);
+
+
+                var back = document.createElement('div');
+                back.classList.add('back', 'face');
+
+                var devicename = document.createElement('span');
+                devicename.classList.add('devicename');
+                devicename.innerHTML = device.name;
+                back.appendChild(devicename);
+
+                var releaseDate = document.createElement('span');
+                releaseDate.classList.add('releaseDate');
+                releaseDate.textContent = device.releaseDate;
+                back.appendChild(releaseDate);
+
+                card.appendChild(front);
+                card.appendChild(back);
+                flip.appendChild(card);
+
+
+                card.addEventListener('click', flipCard);
+                cards.appendChild(flip);
+
+                // Hack...
+                //helpDate.style.backgroundColor = window.getComputedStyle(back, null)['background-color'];
+            }
+        }
+
+        var answer;
+        var colors = [ 'rgb(8, 167, 222)', 'rgb(255, 215, 0)', 'rgb(237, 79, 75)', 'rgb(108, 191, 89)' ];
+        var devicesLeft = devices.slice();
+        var play = false;
+        var indexColor = 0;
+        var banner = document.querySelector('.banner');
+
+        function askQuestion() {
+            updateScore();
+            pauseGame();
+            var timeout = 60;
+            var flippedCards = document.querySelectorAll('.flipped');
+            for (var i =0; i < flippedCards.length; i++) {
+                (function(i) {
+                setTimeout(function() {
+                    flippedCards[i].classList.remove('flipped');
+                }, timeout + (timeout*i*.5));
+                })(i);
+            }
+
+            var activeColor = colors[(++indexColor) % colors.length];
+            banner.style.backgroundColor = activeColor;
+
+            var device = devicesLeft[Math.floor(Math.random(devicesLeft.length)*devicesLeft.length)];
+
+            answer = device;
+            var question = document.querySelector('.question');
+            question.innerHTML = 'Which one is the ' + device.name +
+                '<br/> released in ' + device.releaseDate + '?';
+
+            // Deactivate game interaction for a small period of time.
+            setTimeout(resumeGame, timeout + (timeout*i*.5))
+
+        }
+
+        function congratulations() {
+            pauseGame();
+            var timeout = 60;
+            var leftCards = document.querySelectorAll('.card');
+            for (var i =0; i < leftCards.length; i++) {
+                leftCards[i].classList.add('flipped');
+                leftCards[i].classList.remove('found');
+            }
+
+            score.classList.add('hidden');
+
+            var question = document.querySelector('.question');
+            if (numberBadAnswers === 0) {
+                question.innerHTML = 'Congratulations! You deserve respect.<br/>' +
+                'You are a Chrome OS Master Ninja!';
+            } else {
+                question.innerHTML = 'Congratulations! You\'ve made only ' + numberBadAnswers + ' mistakes.<br/>';
+                if (numberBadAnswers === 1)
+                    question.innerHTML = question.innerHTML.replace('mistakes', 'mistake');
+                if (numberBadAnswers < 5)
+                    question.innerHTML += 'You are a Chrome OS Ninja!'
+                else if (numberBadAnswers < 10)
+                    question.innerHTML += 'You are a Chrome OS Mentor!'
+                else if (numberBadAnswers < 15)
+                    question.innerHTML += 'You are a Chrome OS Warrior!'
+                else if (numberBadAnswers < 20)
+                    question.innerHTML += 'You are a Chrome OS Acolyte!'
+                else
+                    question.innerHTML += 'You did it!'
+            }
+        }
+
+
+        function setTimer() {
+            var timer = document.querySelector('.timer');
+            var memorizingTime = 5;
+            var secondsLeft = memorizingTime;
+
+            timer.innerHTML = '';
+            for (var i = 0; i < secondsLeft; i++) {
+                dot = document.createElement('div');
+                dot.classList.add('dot');
+                timer.appendChild(dot);
+            }
+
+            function runTimer() {
+                setTimeout(function() {
+                    secondsLeft--;
+                    timer.childNodes[secondsLeft].classList.add('done');
+                    if (secondsLeft === 0) {
+                        timer.classList.add('hidden');
+                        score.classList.remove('hidden');
+                        askQuestion();
+                    } else {
+                        runTimer();
+                    }
+                }, 500)
+            }
+            runTimer();
+        }
+
+        setupCards();
+        setTimer();
+    </script>
+</body>
+</html>
+
